@@ -1,0 +1,56 @@
+---
+import { createHash } from 'node:crypto';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Mark the page as script-enabled before first paint (only the main page needs this). */
+  boot?: boolean;
+}
+const { title, description, boot = false } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const image = new URL(`${base}og.png`, Astro.site).href;
+const url = new URL(base, Astro.site).href;
+
+// The one inline script the site uses. Its hash goes in the policy below, so no other inline script can run.
+const bootScript = "document.documentElement.classList.add('js');";
+const bootHash = createHash('sha256').update(bootScript).digest('base64');
+
+/**
+ * Content Security Policy: everything loads from this site only. No third-party scripts, fonts,
+ * images or connections; no plugins; no forms. Applied in production builds only, because the
+ * development server injects its own inline scripts.
+ */
+const csp = [
+  "default-src 'self'",
+  `script-src 'self'${boot ? ` 'sha256-${bootHash}'` : ''}`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  "font-src 'self'",
+  "connect-src 'self'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'none'",
+].join('; ');
+---
+<meta charset="utf-8" />
+{import.meta.env.PROD && <meta http-equiv="Content-Security-Policy" content={csp} />}
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+<meta name="description" content={description} />
+<meta name="theme-color" content="#0A0A0A" />
+<title>{title}</title>
+<link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+<link rel="canonical" href={url} />
+<meta property="og:type" content="website" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={url} />
+<meta property="og:image" content={image} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={image} />
+{boot && <script is:inline set:html={bootScript}></script>}

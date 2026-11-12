@@ -1,0 +1,32 @@
+---
+import '@fontsource/cormorant-garamond/600.css';
+import '@fontsource/eb-garamond/400.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '../styles/global.css';
+import Head from '../components/Head.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <Head title="Page not found · Ahmad Dzaki" description="This page does not exist." />
+  </head>
+  <body>
+    <main class="lost">
+      <pre aria-hidden="true">{[
+        '      .      ',
+        '     /|\\     ',
+        '    / | \\    ',
+        '   |  |  |   ',
+        '   |  |  |   ',
+        '   |     |   ',
+        '   |_____|   ',
+      ].join('\n')}</pre>
+      <h1>LOST</h1>
+      <div class="wings"><i></i><span>PAGE NOT FOUND</span><i></i></div>
+      <p>This path leads nowhere.</p>
+      <a href={base}>Return to the cathedral</a>
+    </main>
+  </body>
+</html>

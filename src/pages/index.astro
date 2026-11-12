@@ -1,0 +1,30 @@
+---
+import '@fontsource/cormorant-garamond/500.css';
+import '@fontsource/cormorant-garamond/600.css';
+import '@fontsource/eb-garamond/400.css';
+import '@fontsource/eb-garamond/400-italic.css';
+import '@fontsource/jetbrains-mono/400.css';
+import '@fontsource/jetbrains-mono/500.css';
+import '../styles/global.css';
+import Head from '../components/Head.astro';
+import Hero from '../components/Hero.astro';
+import Inventory from '../components/Inventory.astro';
+import { about } from '../data/about';
+
+const description = about.tagline
+  ? `Ahmad Dzaki, Software Engineering student at Singapore Management University. ${about.tagline}`
+  : 'Ahmad Dzaki, Software Engineering student at Singapore Management University. Backend projects, experience and contact.';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <Head title="Ahmad Dzaki · Software Engineering" description={description} boot />
+  </head>
+  <body>
+    <Hero />
+    <Inventory />
+    <script>
+      import '../scripts/main.ts';
+    </script>
+  </body>
+</html>

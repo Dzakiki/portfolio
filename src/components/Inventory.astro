@@ -1,0 +1,126 @@
+---
+import { getCollection } from 'astro:content';
+import Frame from './Frame.astro';
+import { about } from '../data/about';
+import { equipment, lists } from '../data/attributes';
+import { contact } from '../data/contact';
+
+const relics = (await getCollection('relics')).sort((a, b) => a.data.order - b.data.order);
+const journey = (await getCollection('journey')).sort((a, b) => a.data.order - b.data.order);
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const tabs = ['journey', 'relics', 'attributes', 'contact'];
+const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+---
+<main id="inv">
+  <nav class="tabs" aria-label="Sections">
+    {tabs.map(t => <a href={`#${t}`} data-tab={t}>{t.toUpperCase()}</a>)}
+  </nav>
+
+  <section class="tab" id="journey" data-tab="journey">
+    <header class="card"><h2>JOURNEY</h2><div class="wings"><i></i><span>EXPERIENCE AND EDUCATION</span><i></i></div></header>
+    <Frame single>
+      {about.bio.length > 0 && <div class="bio">{about.bio.map(p => <p>{p}</p>)}</div>}
+      <ol class="timeline">
+        {journey.map(j => (
+          <li class="stop" id={`journey/${j.id}`}>
+            <div class="when" aria-hidden="true">{j.data.years}</div>
+            <div class="node" aria-hidden="true">◆</div>
+            <div class="what">
+              <h3>{j.data.title}</h3>
+              <p class="stack">{j.data.place} · {j.data.dates}</p>
+              <ul>{j.data.points.map(p => <li>{p}</li>)}</ul>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </Frame>
+  </section>
+
+  <section class="tab" id="relics" data-tab="relics">
+    <header class="card"><h2>RELICS</h2><div class="wings"><i></i><span>PROJECTS</span><i></i></div></header>
+    <Frame single>
+      <div class="alcoves">
+        {relics.map(r => (
+          <a class="item alcove" href={`#relics/${r.id}`} data-item={r.id}>
+            <pre class="thumb" data-relic={r.data.relic} aria-hidden="true"></pre>
+            <span class="aname">{r.data.short}</span>
+            <small>{r.data.lead}</small>
+          </a>
+        ))}
+      </div>
+      <div class="keys" aria-hidden="true">↑ ↓ CHOOSE A RELIC · ← → SECTIONS · MOVE THE POINTER ACROSS THE RELIC TO TURN IT</div>
+      <div class="showcase">
+        <pre class="stage3d" aria-hidden="true"></pre>
+        <div class="details">
+          {relics.map((r, i) => (
+            <article class="detail" id={`relics/${r.id}`} data-item={r.id} data-relic={r.data.relic}>
+              <div class="body">
+                <p class="ordinal">RELIC {roman[i]} OF {roman[relics.length - 1]} · {r.data.relicName.toUpperCase()}</p>
+                <p class="why">{r.data.relicWhy}</p>
+                <h3>{r.data.full}</h3>
+                <p class="stack">{r.data.stack.join(' · ')}</p>
+                <ul>{r.data.points.map(p => <li>{p}</li>)}</ul>
+                <p class="lore">{r.data.lore}</p>
+                {r.data.links.length > 0 && <p class="links">{r.data.links.map(l => <a href={l.url} rel="noopener noreferrer">{l.label} →</a>)}</p>}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </Frame>
+  </section>
+
+  <section class="tab" id="attributes" data-tab="attributes">
+    <header class="card"><h2>ATTRIBUTES</h2><div class="wings"><i></i><span>SKILLS</span><i></i></div></header>
+    <Frame single>
+      <div class="armoury">
+        <div class="altar" aria-hidden="true">
+          <pre class="sigil"></pre>
+          <div class="altar-name"></div>
+          <div class="altar-group"></div>
+        </div>
+        <div class="racks">
+          {equipment.map(grp => (
+            <div class="rack">
+              <div class="cap">{grp.title.toUpperCase()}</div>
+              <ul class="tiles">
+                {grp.skills.map(s => (
+                  <li class="tile" tabindex="0" data-name={s.name} data-group={grp.title} data-path={s.icon} data-mark={s.mark}>
+                    {s.icon
+                      ? <svg viewBox="0 0 24 24" aria-hidden="true"><path d={s.icon} /></svg>
+                      : <span class="mark" aria-hidden="true">{s.mark}</span>}
+                    <span class="tname">{s.name}</span>
+                    {s.usedIn.length > 0 && <span class="tused">{s.usedIn.map(u => <a href={u.href}>{u.label}</a>)}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="extras">
+        {lists.map(l => (
+          <div>
+            <h3>{l.title.toUpperCase()}</h3>
+            <ul>{l.entries.map(e => <li>{e}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </Frame>
+  </section>
+
+  <section class="tab" id="contact" data-tab="contact">
+    <header class="card"><h2>CONTACT</h2><div class="wings"><i></i><span>GET IN TOUCH</span><i></i></div></header>
+    <Frame single>
+      <div class="summons">
+        <pre class="relic3d stage" data-relic="bell" aria-hidden="true"></pre>
+        <dl class="contact">
+          <div><dt>EMAIL</dt><dd><a href={`mailto:${contact.email}`}>{contact.email}</a></dd></div>
+          <div><dt>LINKEDIN</dt><dd><a href={contact.linkedin.url} rel="noopener noreferrer">{contact.linkedin.label}</a></dd></div>
+          <div><dt>GITHUB</dt><dd><a href={contact.github.url} rel="noopener noreferrer">{contact.github.label}</a></dd></div>
+          {contact.resume && <div><dt>RÉSUMÉ</dt><dd><a href={`${base}${contact.resume}`} download>Download PDF</a></dd></div>}
+        </dl>
+      </div>
+    </Frame>
+  </section>
+</main>

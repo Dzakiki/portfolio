@@ -1,0 +1,9 @@
+---
+interface Props { single?: boolean }
+const { single = false } = Astro.props;
+const ornament = ['@==+--o-.', '#  .-\'   ', '+-\'      ', 'o        ', '.        '].join('\n');
+---
+<div class:list={['frame', { single }]}>
+  {['tl', 'tr', 'bl', 'br'].map(pos => <pre class={`corner ${pos}`} aria-hidden="true">{ornament}</pre>)}
+  <slot />
+</div>

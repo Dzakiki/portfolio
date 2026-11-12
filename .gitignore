@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.astro/
+test-results/
+playwright-report/
+e2e-shots/
+# personal files kept out of the public repository
+private/

@@ -1,0 +1,16 @@
+---
+import { about } from '../data/about';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+---
+<canvas id="ascii" aria-hidden="true"></canvas>
+<header id="hero" style={`--poster:url(${base}poster.png)`}>
+  <h1 class="name">AHMAD DZAKI</h1>
+  <div class="rule"></div>
+  <p class="sub">SOFTWARE ENGINEERING STUDENT · SINGAPORE MANAGEMENT UNIVERSITY</p>
+  {about.tagline && <p class="tagline">{about.tagline}</p>}
+</header>
+<p id="skip" aria-hidden="true"><span class="key">PRESS ANY KEY TO SKIP</span><span class="touch">TAP TO SKIP</span></p>
+<button id="hint" type="button">DESCEND<span aria-hidden="true">v</span></button>
+<button id="sound" type="button" aria-pressed="false">SOUND: OFF</button>
+<div class="spacer" aria-hidden="true"></div>
