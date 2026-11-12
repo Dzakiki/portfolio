@@ -32,6 +32,8 @@ By default it builds for `https://dzakiki.github.io/portfolio`. For a custom dom
 3. At the domain registrar, point the domain at GitHub Pages using the DNS records in GitHub's guide to custom domains.
 4. Run `npm run poster` and commit, so the link-preview picture is current.
 
+To check the deployed site itself, set `LIVE_URL` to its address and run `npm run e2e`.
+
 To check a custom-domain build locally: set `SITE_URL`, `BASE_PATH=/` and `FRESH=1`, then `npm run e2e`.
 
 ## Security

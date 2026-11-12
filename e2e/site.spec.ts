@@ -1,8 +1,13 @@
 import { expect, test, type Page } from '@playwright/test';
 
 // the address the build was made for; matches astro.config.mjs
-const SITE = process.env.SITE_URL || 'https://dzakiki.github.io';
-const BASE = (process.env.BASE_PATH || '/portfolio').replace(/\/?$/, '/');
+const slash = (s: string) => (s.endsWith('/') ? s : `${s}/`);
+// When LIVE_URL is set the checks run against the deployed site rather than a local build.
+const LIVE = process.env.LIVE_URL ? new URL(slash(process.env.LIVE_URL)) : null;
+const SITE = LIVE ? LIVE.origin : process.env.SITE_URL || 'https://dzakiki.github.io';
+const BASE = LIVE ? LIVE.pathname : slash(process.env.BASE_PATH || '/portfolio');
+/** Where the pages under test are served from; anything requested from elsewhere is third-party. */
+const ORIGIN = LIVE ? LIVE.origin : 'http://localhost:4321';
 
 const ready = (page: Page) => page.waitForFunction(() => document.documentElement.dataset.ready === '1');
 
@@ -281,7 +286,7 @@ test('security policy: only this site may load anything, and the page obeys it',
   page.on('console', m => { if (/Content Security Policy|Refused to/i.test(m.text())) violations.push(m.text()); });
   page.on('pageerror', e => violations.push(String(e)));
   const external: string[] = [];
-  page.on('request', r => { if (!r.url().startsWith('http://localhost:4321') && !r.url().startsWith('data:') && !r.url().startsWith('blob:')) external.push(r.url()); });
+  page.on('request', r => { if (!r.url().startsWith(ORIGIN) && !r.url().startsWith('data:') && !r.url().startsWith('blob:')) external.push(r.url()); });
 
   await page.goto('./?t=30');
   await ready(page);
