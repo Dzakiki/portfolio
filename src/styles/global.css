@@ -9,7 +9,9 @@
   --mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { background: var(--bg); }
+html { background: var(--bg); scrollbar-gutter: stable; }
+/* the page does not scroll while the entrance plays */
+html.entering { overflow: hidden; }
 body { color: var(--bone); font-family: var(--reading); overflow-x: hidden; }
 a { color: inherit; }
 a:focus-visible, button:focus-visible { outline: 2px solid var(--bone); outline-offset: 3px; }

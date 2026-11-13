@@ -242,16 +242,36 @@ test('reduced motion: name shows at once and content is reachable', async ({ pag
   await expect(page.locator('#attributes .tname', { hasText: /^Python$/ })).toBeVisible();
 });
 
-test('the entrance plays once per visit', async ({ page }) => {
+test('the entrance plays on every load, and only a key or click skips it', async ({ page, isMobile }) => {
   await page.goto('./');
   await ready(page);
-  await expect(page.locator('#hero')).not.toHaveClass(/\bin\b/);
+  await expect(page.locator('#hero')).not.toHaveClass(/in/);
   await expect(page.locator('#skip')).toBeVisible();
-  await expect(page.locator('#hero.in')).toBeVisible({ timeout: 12_000 });
+
+  // scrolling neither skips the entrance nor moves the page
+  if (!isMobile) {
+    await page.mouse.wheel(0, 900);
+    await page.waitForTimeout(600);
+    await expect(page.locator('#hero')).not.toHaveClass(/in/);
+    expect(await page.evaluate(() => window.scrollY)).toBe(0);
+  }
+  // a bare modifier key does not skip it either
+  await page.keyboard.press('Shift');
+  await page.waitForTimeout(300);
+  await expect(page.locator('#hero')).not.toHaveClass(/in/);
+
+  // a real key press does, and the page can scroll again
+  await page.keyboard.press('a');
+  await expect(page.locator('#hero.in')).toBeVisible({ timeout: 1500 });
   await expect(page.locator('#skip')).toBeHidden();
+  await expect(page.locator('html')).not.toHaveClass(/entering/);
+
+  // it plays again on the next load
   await page.reload();
   await ready(page);
-  await expect(page.locator('#hero.in')).toBeVisible({ timeout: 1500 });
+  await page.waitForTimeout(800);
+  await expect(page.locator('#hero')).not.toHaveClass(/in/);
+  await expect(page.locator('#hero.in')).toBeVisible({ timeout: 12_000 });
 });
 
 test('the about text appears in the hero and on the Journey tab', async ({ page }) => {

@@ -17,11 +17,9 @@ const audio = createAudio();
 const inventory = initInventory(invEl, { reduce, onSelect: () => audio.chime() });
 const deep = parseHash(location.hash, inventory.items);
 
-/** The entrance plays once per visit; a refresh or a return in the same tab goes straight to the hero. */
-const visit = {
-  seen(): boolean { try { return sessionStorage.getItem('entered') === '1'; } catch { return false; } },
-  mark(): void { try { sessionStorage.setItem('entered', '1'); } catch { /* storage unavailable: replay next time */ } },
-};
+// An earlier version remembered that the entrance had played and skipped it afterwards. Browsers
+// that restore tabs kept that memory indefinitely, so the entrance never came back. Clear it.
+try { sessionStorage.removeItem('entered'); } catch { /* storage unavailable */ }
 
 startHero(
   {
@@ -31,12 +29,13 @@ startHero(
     inv: invEl,
   },
   {
-    onLand: natural => { visit.mark(); if (natural) audio.bell(); },
+    onLand: natural => { if (natural) audio.bell(); },
     onNave: () => audio.door(),
     onArrive: () => inventory.open(),
   },
   {
-    reduce, skip: deep !== null || visit.seen(), frozenT: num('t'), sOverride: num('s'),
+    // the entrance plays on every load; only a link straight to a tab or project skips it
+    reduce, skip: deep !== null, frozenT: num('t'), sOverride: num('s'),
     tab: () => inventory.route().tab,
     perf: qs.has('perf'),
   },

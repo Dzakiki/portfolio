@@ -69,7 +69,7 @@ Characters come from the ramp ` .:-=+*#%@` only, so brightness maps to character
 
 ### Entrance sequence
 
-Plays once per visit, about 8 seconds: a refresh, or a return in the same browser tab, goes straight to the finished hero. While it plays, a small "PRESS ANY KEY TO SKIP" line ("TAP TO SKIP" on touch screens) sits at the bottom. The camera starts high and cranes down the building.
+Plays on every page load, about 8 seconds; only a link straight to a tab or project skips it. (An earlier version played it once per visit, but browsers that restore tabs kept that memory, so it never came back.) While it plays the page does not scroll, and a small "PRESS ANY KEY TO SKIP" line ("TAP TO SKIP" on touch screens) sits at the bottom. A key press, click or tap skips it; scrolling does not, because people scroll the moment a page loads and would lose it unseen. The camera starts high and cranes down the building.
 
 | Time | Event |
 |---|---|

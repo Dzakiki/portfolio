@@ -73,6 +73,7 @@ export function startHero(el: HeroElements, hooks: HeroHooks, opts: HeroOptions)
 
   function land(natural: boolean): void {
     landed = true;
+    document.documentElement.classList.remove('entering');
     el.hero.classList.add('in');
     window.setTimeout(() => el.hint.classList.add('in'), natural ? (ENTRANCE.hintAt - ENTRANCE.nameAt) * 1000 : 300);
     if (natural && !reduce) {
@@ -221,10 +222,14 @@ export function startHero(el: HeroElements, hooks: HeroHooks, opts: HeroOptions)
     myn = (e.clientY / window.innerHeight) * 2 - 1;
     hasMouse = e.pointerType === 'mouse';
   });
-  window.addEventListener('wheel', () => { cancelAuto(); skip(); }, { passive: true });
-  window.addEventListener('touchstart', () => { cancelAuto(); skip(); }, { passive: true });
+  // Scrolling takes over from the automatic descent, but never skips the entrance: people scroll
+  // the moment a page loads, and would lose the entrance without ever seeing it. Only a deliberate
+  // click, tap or key press skips it (the page does not scroll while it plays).
+  window.addEventListener('wheel', cancelAuto, { passive: true });
+  window.addEventListener('touchstart', cancelAuto, { passive: true });
   window.addEventListener('pointerdown', () => skip());
   window.addEventListener('keydown', e => {
+    if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab'].includes(e.key) || /^F\d+$/.test(e.key)) return;
     if (!landed) { skip(); return; }
     if (window.scrollY < window.innerHeight * 0.2 && ['Enter', ' ', 'ArrowDown'].includes(e.key)) {
       e.preventDefault();
@@ -238,7 +243,13 @@ export function startHero(el: HeroElements, hooks: HeroHooks, opts: HeroOptions)
   const fonts = document.fonts?.load ? document.fonts.load(`10px ${FONT}`) : Promise.resolve();
   const begin = () => {
     rebuild();
-    if (!opts.skip && !reduce) t0 = performance.now();
+    if (!opts.skip && !reduce) {
+      t0 = performance.now();
+      // hold the page still while the entrance plays; released when the name lands, or after
+      // 12 seconds whatever happens, so a fault can never leave the page stuck
+      document.documentElement.classList.add('entering');
+      window.setTimeout(() => document.documentElement.classList.remove('entering'), 12_000);
+    }
     last = performance.now();
     requestAnimationFrame(tick);
   };
