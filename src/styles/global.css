@@ -29,7 +29,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--bone); outline-
        text-shadow: 0 0 12px var(--bg), 0 0 24px var(--bg); }
 .js #hero .name { transition: letter-spacing 2.6s var(--ease), margin-right 2.6s var(--ease), opacity 1.2s ease; }
 .js #hero .rule { transition: width 1.8s var(--ease) .5s; }
-.tagline { font-style: italic; font-size: clamp(16px, 1.6vw, 25px); line-height: 1.4; margin-top: 1.8vh; padding: 0 20px; max-width: 46em; text-shadow: 0 0 12px var(--bg), 0 0 24px var(--bg); }
+.tagline { font-style: italic; font-size: clamp(16px, 1.6vw, 25px); line-height: 1.4; margin: 1.8vh 14px 0; padding: 5px 16px 7px; max-width: min(46em, calc(100% - 28px));
+           /* thin italic strokes vanish among the characters of the building, so it gets a dark backing with a feathered edge */
+           background: rgba(10, 10, 10, .86); box-shadow: 0 0 14px 8px rgba(10, 10, 10, .86); }
 .js #hero .sub { transition: opacity 1.4s ease 1.1s; }
 .js #hero .tagline { transition: opacity 1.4s ease 1.6s; }
 .js #hero:not(.in) .tagline { opacity: 0; }
@@ -44,9 +46,14 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--bone); outline-
 @media (hover: none) { #skip .key { display: none; } #skip .touch { display: inline; } }
 @keyframes skip-in { to { opacity: .8; } }
 #hint, #sound { position: fixed; z-index: 6; background: none; border: 0; color: var(--bone); cursor: pointer; font-family: var(--mono); text-shadow: 0 0 10px var(--bg); }
-#hint { left: 50%; bottom: 3.2vh; transform: translateX(-50%); font-size: 11px; letter-spacing: .4em; padding: 10px 16px; opacity: 0; transition: opacity 1s ease; }
-#hint.in { opacity: .85; }
-#hint span { display: block; margin-top: 6px; animation: bob 1.8s ease-in-out infinite; }
+/* Like the tab bar, the way down is a solid, bordered plate: bare text over the moving characters
+   of the building was the same size and colour as them, and got lost. */
+#hint { left: 50%; bottom: max(4vh, 64px); transform: translateX(-50%); font-weight: 500; font-size: clamp(13px, 1.1vw, 16px); letter-spacing: .4em; padding: 14px 26px 12px calc(26px + .4em);
+        background: var(--bg); border: 1px solid var(--bone); box-shadow: 0 0 0 5px var(--bg), 0 0 26px 10px rgba(10, 10, 10, .9); text-shadow: none;
+        opacity: 0; transition: opacity 1s ease, background-color .2s, color .2s; }
+#hint.in { opacity: 1; }
+#hint:hover, #hint:focus-visible { background: var(--bone); color: var(--bg); }
+#hint span { display: block; margin: 6px .4em 0 0; animation: bob 1.8s ease-in-out infinite; }
 #sound { bottom: 14px; left: 16px; font-size: 10.5px; letter-spacing: .24em; padding: 8px 10px; color: var(--dim); background: var(--bg); border: 1px solid var(--line); text-shadow: none; }
 #sound[aria-pressed="true"] { color: var(--bone); }
 @keyframes bob { 50% { transform: translateY(6px); opacity: .4; } }
